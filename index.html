@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موقع دردشة</title>
+    <link rel="stylesheet" href="styles.css">
+<style type="text/css" id="dcoder_stylesheet">body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+#chat-container {
+    width: 400px;
+    max-width: 100%;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+#chat-window {
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+#output {
+    margin-bottom: 10px;
+}
+
+#message {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#send {
+    width: 25%;
+    padding: 10px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+</style></head>
+<body>
+    <div id="chat-container">
+        <div id="chat-window">
+            <div id="output"></div>
+        </div>
+        <input id="message" type="text" placeholder="اكتب رسالتك...">
+        <button id="send">إرسال</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+    <script src="script.js"></script>
+
+<script type="text/javascript" id="dcoder_script">// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getDatabase, ref, push, onChildAdded } from "firebase/database";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCe4nIbSuyN6sHEFvfpdRbzyILyr-zVhKo",
+  authDomain: "chat-mad-4ec6d.firebaseapp.com",
+  databaseURL: "https://chat-mad-4ec6d-default-rtdb.firebaseio.com",
+  projectId: "chat-mad-4ec6d",
+  storageBucket: "chat-mad-4ec6d.appspot.com",
+  messagingSenderId: "133266731034",
+  appId: "1:133266731034:web:3540d3b2f20c2e3225a1a3",
+  measurementId: "G-12J0W1SW14"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getDatabase(app);
+
+// Select DOM elements
+const messageInput = document.getElementById('message');
+const sendButton = document.getElementById('send');
+const output = document.getElementById('output');
+
+// Send message to Firebase
+sendButton.addEventListener('click', () => {
+    const message = messageInput.value;
+    if (message.trim()) {
+        const messagesRef = ref(db, 'messages');
+        push(messagesRef, message);
+        messageInput.value = ''; // Clear the input field
+    }
+});
+
+// Listen for new messages and display them
+const messagesRef = ref(db, 'messages');
+onChildAdded(messagesRef, (snapshot) => {
+    const message = snapshot.val();
+    const messageElement = document.createElement('p');
+    messageElement.textContent = message;
+    output.appendChild(messageElement);
+    output.scrollTop = output.scrollHeight; // Scroll to the bottom
+});
+</script></body></html>
